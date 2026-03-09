@@ -1,132 +1,163 @@
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import cursorImage from "../assets/cursor.png";
+import { motion } from "motion/react";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
+import { MessageCircle, Send } from "lucide-react";
 
-export function CustomCursor() {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [isHovering, setIsHovering] = useState(false);
-
-  useEffect(() => {
-    const updateMousePosition = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
-    };
-
-    const handleMouseOver = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-
-      if (
-        target.tagName === "A" ||
-        target.tagName === "BUTTON" ||
-        target.closest("a") ||
-        target.closest("button") ||
-        target.classList.contains("cursor-hover")
-      ) {
-        setIsHovering(true);
-      } else {
-        setIsHovering(false);
-      }
-    };
-
-    window.addEventListener("mousemove", updateMousePosition);
-    window.addEventListener("mouseover", handleMouseOver);
-
-    document.body.style.cursor = "none";
-
-    return () => {
-      window.removeEventListener("mousemove", updateMousePosition);
-      window.removeEventListener("mouseover", handleMouseOver);
-      document.body.style.cursor = "auto";
-    };
-  }, []);
+export function ContactSection() {
+  const handleWhatsAppClick = () => {
+    window.open('https://wa.me/918129534377', '_blank');
+  };
 
   return (
-    <>
-      {/* Cursor */}
+    <section id="contact" className="py-28 px-6 bg-gradient-to-b from-white to-gray-50 relative overflow-hidden">
+      {/* Large soft gradient circle */}
       <motion.div
-        className="fixed top-0 left-0 pointer-events-none z-[9999] flex items-center justify-center"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-gradient-to-r from-[#A259FF]/10 to-[#4CC3FF]/10 rounded-full blur-3xl"
         animate={{
-          x: mousePosition.x,
-          y: mousePosition.y,
-          scale: isHovering ? 1.15 : 1,
+          scale: [1, 1.1, 1],
+          opacity: [0.5, 0.7, 0.5],
         }}
         transition={{
-          type: "spring",
-          stiffness: 500,
-          damping: 28,
-          mass: 0.5,
+          duration: 8,
+          repeat: Infinity,
+          ease: "easeInOut",
         }}
-        style={{
-          transform: "translate(-50%, -50%)",
-        }}
-      >
-        <img
-          src={cursorImage}
-          alt=""
-          className="w-8 h-auto object-contain"
-          style={{
-            filter: isHovering
-              ? "drop-shadow(0 4px 16px rgba(162, 89, 255, 0.6)) drop-shadow(0 8px 32px rgba(162, 89, 255, 0.4))"
-              : "drop-shadow(0 2px 8px rgba(162, 89, 255, 0.4)) drop-shadow(0 4px 16px rgba(162, 89, 255, 0.2))",
-            transition: "filter 0.3s ease",
-          }}
-        />
-      </motion.div>
-
-      {isHovering && (
-        <>
+      />
+      
+      <div className="max-w-4xl mx-auto relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+          className="text-center mb-16"
+        >
           <motion.div
-            className="fixed top-0 left-0 pointer-events-none z-[9998] rounded-full"
-            initial={{
-              x: mousePosition.x - 24,
-              y: mousePosition.y - 24,
-              scale: 0.8,
-              opacity: 0.6,
-            }}
-            animate={{
-              x: mousePosition.x - 24,
-              y: mousePosition.y - 24,
-              scale: 1.5,
-              opacity: 0,
-            }}
-            transition={{
-              duration: 0.8,
-              repeat: Infinity,
-              ease: "easeOut",
-            }}
-            style={{
-              width: "48px",
-              height: "48px",
-              border: "2px solid rgba(162, 89, 255, 0.6)",
-              background:
-                "radial-gradient(circle, rgba(162, 89, 255, 0.2), transparent 70%)",
-            }}
-          />
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="inline-block px-4 py-2 bg-gradient-to-r from-[#A259FF]/10 to-[#4CC3FF]/10 rounded-full mb-6 border border-[#A259FF]/20"
+          >
+            <span className="text-sm">Get in Touch</span>
+          </motion.div>
+          
+          <h2 className="text-4xl md:text-5xl lg:text-6xl mb-6 tracking-tight">
+            Start Your Project
+          </h2>
+          <p className="text-xl text-gray-600 leading-relaxed">
+            Let's create something exceptional together
+          </p>
+        </motion.div>
 
-          <motion.div
-            className="fixed top-0 left-0 pointer-events-none z-[9997] rounded-full"
-            animate={{
-              x: mousePosition.x - 20,
-              y: mousePosition.y - 20,
-            }}
-            transition={{
-              type: "spring",
-              stiffness: 400,
-              damping: 25,
-              mass: 0.5,
-            }}
-            style={{
-              width: "40px",
-              height: "40px",
-              border: "2px solid rgba(76, 195, 255, 0.5)",
-              backdropFilter: "blur(8px)",
-              background:
-                "radial-gradient(circle, rgba(255,255,255,0.1), transparent 70%)",
-              boxShadow:
-                "0 0 20px rgba(162,89,255,0.4), inset 0 0 10px rgba(76,195,255,0.3)",
-            }}
-          />
-        </>
-      )}
-    </>
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7, delay: 0.2 }}
+          className="liquid-glass-card rounded-3xl shadow-2xl p-10 md:p-14 relative overflow-hidden refraction edge-glow-hover"
+        >
+          {/* Micro liquid movement */}
+          <div className="absolute inset-0 pointer-events-none z-10 micro-liquid">
+            <div className="absolute inset-0 bg-gradient-to-br from-white/50 via-transparent to-transparent opacity-50"></div>
+          </div>
+          
+          <form
+            action="https://formspree.io/f/xdawkvje"
+            method="POST"
+            className="space-y-7 relative z-10"
+          >
+            <input type="hidden" name="_subject" value="New Cirqle Inquiry" />
+            <input type="text" name="_gotcha" style={{ display: "none" }} />
+            <div className="grid md:grid-cols-2 gap-7">
+              <div>
+                <label htmlFor="name" className="block mb-3 text-sm">
+                  Full Name
+                </label>
+                <Input
+                  id="name"
+                  type="text"
+                  name="name"
+                  placeholder="Your name"
+                  className="rounded-2xl border-gray-200 focus:border-[#A259FF] h-14 transition-all liquid-glass-card"
+                />
+              </div>
+              <div>
+                <label htmlFor="whatsapp" className="block mb-3 text-sm">
+                  WhatsApp Number
+                </label>
+                <Input
+                  id="whatsapp"
+                  type="tel"
+                  name="whatsapp"
+                  placeholder="+91 8129 5343 77"
+                  className="rounded-2xl border-gray-200 focus:border-[#A259FF] h-14 transition-all liquid-glass-card"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="email" className="block mb-3 text-sm">
+                Email Address
+              </label>
+              <Input
+                id="email"
+                type="email"
+                name="email"
+                placeholder="your@email.com"
+                className="rounded-2xl border-gray-200 focus:border-[#A259FF] h-14 transition-all liquid-glass-card"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="requirement" className="block mb-3 text-sm">
+                Project Details
+              </label>
+              <Textarea
+                id="requirement"
+                name="message"
+                placeholder="Tell us about your project..."
+                rows={6}
+                className="rounded-2xl border-gray-200 focus:border-[#A259FF] resize-none transition-all liquid-glass-card"
+              />
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4 pt-4">
+              <motion.div
+                className="flex-1"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Button
+                  type="submit"
+                  size="lg"
+                  className="w-full bg-gradient-to-r from-[#A259FF] to-[#4CC3FF] text-white hover:opacity-90 transition-opacity py-7 rounded-full shadow-xl shadow-[#A259FF]/30 cursor-hover edge-glow"
+                >
+                  <Send className="mr-2 w-5 h-5" />
+                  Send Inquiry
+                </Button>
+              </motion.div>
+              
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Button
+                  type="button"
+                  size="lg"
+                  variant="outline"
+                  onClick={handleWhatsAppClick}
+                  className="w-full sm:w-auto border-2 border-[#25D366] text-[#25D366] hover:bg-[#25D366] hover:text-white transition-all py-7 rounded-full cursor-hover liquid-glass-card"
+                >
+                  <MessageCircle className="mr-2 w-5 h-5" />
+                  WhatsApp
+                </Button>
+              </motion.div>
+            </div>
+          </form>
+        </motion.div>
+      </div>
+    </section>
   );
 }
