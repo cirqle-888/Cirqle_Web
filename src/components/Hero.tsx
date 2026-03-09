@@ -1,8 +1,23 @@
+import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { Button } from "./ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
+import { getHeroContent } from "../services/contentService";
 
 export function Hero() {
+  const [hero, setHero] = useState<any | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    getHeroContent().then((items) => {
+      const fields = items?.[0]?.fields ?? null;
+      if (!cancelled && fields) setHero(fields);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-white via-gray-50/30 to-white pt-24 pb-16">
       {/* Animated background circles */}
@@ -71,14 +86,16 @@ export function Hero() {
             className="inline-flex items-center gap-2 px-4 py-2 liquid-glass-card rounded-full mb-8 shadow-xl edge-glow float"
           >
             <Sparkles className="w-4 h-4 text-[#A259FF]" />
-            <span className="text-sm">Premium Design Ecosystem</span>
+            <span className="text-sm">
+              {hero?.badgeText ?? "Premium Design Ecosystem"}
+            </span>
           </motion.div>
           
           <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl mb-8 tracking-tight leading-[1.1]">
-            One Circle.
+            {hero?.title ?? "One Circle."}
             <br />
             <span className="bg-gradient-to-r from-[#A259FF] to-[#4CC3FF] bg-clip-text text-transparent">
-              Infinite Possibilities.
+              {hero?.highlight ?? "Infinite Possibilities."}
             </span>
           </h1>
         </motion.div>
@@ -89,8 +106,8 @@ export function Hero() {
           transition={{ duration: 0.8, delay: 0.3 }}
           className="text-lg md:text-xl lg:text-2xl text-gray-600 max-w-3xl mx-auto mb-12 leading-relaxed"
         >
-          Premium designs delivered with speed and precision. From supermarket promotions 
-          to complete brand ecosystems — experience quality that speaks for itself.
+          {hero?.subtitle ??
+            "Premium designs delivered with speed and precision. From supermarket promotions to complete brand ecosystems — experience quality that speaks for itself."}
         </motion.p>
 
         <motion.div
@@ -107,7 +124,7 @@ export function Hero() {
               size="lg"
               className="bg-gradient-to-r from-[#A259FF] to-[#4CC3FF] text-white hover:opacity-90 transition-opacity px-10 py-7 text-lg rounded-full group shadow-lg shadow-[#A259FF]/25 cursor-hover"
             >
-              Explore Our Work
+              {hero?.primaryCtaText ?? "Explore Our Work"}
               <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Button>
           </motion.div>
@@ -121,7 +138,7 @@ export function Hero() {
               variant="outline"
               className="border-2 border-black text-black hover:bg-black hover:text-white transition-all px-10 py-7 text-lg rounded-full cursor-hover"
             >
-              Get Started
+              {hero?.secondaryCtaText ?? "Get Started"}
             </Button>
           </motion.div>
         </motion.div>

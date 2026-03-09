@@ -1,6 +1,8 @@
+import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { ArrowUpRight } from "lucide-react";
+import { contentfulAssetUrl, getPortfolio } from "../services/contentService";
 
 const projects = [
   {
@@ -46,6 +48,43 @@ const projects = [
 ];
 
 export function HighlightProjects() {
+  const [portfolioProjects, setPortfolioProjects] = useState(projects);
+  const [sectionMeta, setSectionMeta] = useState<any | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    getPortfolio().then((items) => {
+      if (cancelled || !Array.isArray(items) || !items.length) return;
+
+      const meta = items?.[0]?.fields ?? null;
+      const mapped = items
+        .map((entry: any) => {
+          const fields = entry?.fields ?? {};
+          const rawImage = fields?.image;
+          const image =
+            typeof rawImage === "string"
+              ? rawImage
+              : contentfulAssetUrl(rawImage) ?? null;
+          if (!fields?.title || !fields?.category || !image) return null;
+          return {
+            title: String(fields.title),
+            category: String(fields.category),
+            image,
+          };
+        })
+        .filter(Boolean) as typeof projects;
+
+      if (!cancelled && mapped.length) {
+        setSectionMeta(meta);
+        setPortfolioProjects(mapped);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   return (
     <section className="py-28 px-6 bg-white">
       <div className="max-w-7xl mx-auto">
@@ -63,20 +102,20 @@ export function HighlightProjects() {
             transition={{ duration: 0.5 }}
             className="inline-block px-4 py-2 bg-gradient-to-r from-[#A259FF]/10 to-[#4CC3FF]/10 rounded-full mb-6 border border-[#A259FF]/20"
           >
-            <span className="text-sm">Featured Work</span>
+            <span className="text-sm">{sectionMeta?.badgeText ?? "Featured Work"}</span>
           </motion.div>
           
           <h2 className="text-4xl md:text-5xl lg:text-6xl mb-6 tracking-tight">
-            Excellence in Every Project
+            {sectionMeta?.title ?? "Excellence in Every Project"}
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            Crafted with precision, delivered with speed
+            {sectionMeta?.subtitle ?? "Crafted with precision, delivered with speed"}
           </p>
         </motion.div>
 
         {/* Grid Layout */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {projects.map((project, index) => (
+          {portfolioProjects.map((project, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, scale: 0.9 }}

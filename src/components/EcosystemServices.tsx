@@ -1,5 +1,7 @@
+import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { FileText, Palette, Share2, Code, Sparkles, Layout } from "lucide-react";
+import { getServices } from "../services/contentService";
 
 const services = [
   {
@@ -35,6 +37,25 @@ const services = [
 ];
 
 export function EcosystemServices() {
+  const [servicesEntries, setServicesEntries] = useState<any[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    getServices().then((items) => {
+      if (!cancelled && Array.isArray(items)) setServicesEntries(items);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const sectionBadge =
+    servicesEntries?.[0]?.fields?.sectionBadge ?? "Complete Ecosystem";
+  const sectionTitle = servicesEntries?.[0]?.fields?.sectionTitle ?? "All in One Cirqle";
+  const sectionSubtitle =
+    servicesEntries?.[0]?.fields?.sectionSubtitle ??
+    "A complete suite of services, seamlessly connected";
+
   return (
     <section id="services" className="py-28 px-6 bg-white">
       <div className="max-w-7xl mx-auto">
@@ -52,20 +73,21 @@ export function EcosystemServices() {
             transition={{ duration: 0.5 }}
             className="inline-block px-4 py-2 bg-gradient-to-r from-[#A259FF]/10 to-[#4CC3FF]/10 rounded-full mb-6 border border-[#A259FF]/20"
           >
-            <span className="text-sm">Complete Ecosystem</span>
+            <span className="text-sm">{sectionBadge}</span>
           </motion.div>
           
           <h2 className="text-4xl md:text-5xl lg:text-6xl mb-6 tracking-tight">
-            All in One Cirqle
+            {sectionTitle}
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            A complete suite of services, seamlessly connected
+            {sectionSubtitle}
           </p>
         </motion.div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {services.map((service, index) => {
             const Icon = service.icon;
+            const fields = servicesEntries?.[index]?.fields ?? null;
             return (
               <motion.div
                 key={index}
@@ -94,9 +116,11 @@ export function EcosystemServices() {
                       <Icon className="w-8 h-8 text-white" />
                     </motion.div>
                     
-                    <h3 className="text-2xl mb-3 tracking-tight">{service.title}</h3>
+                    <h3 className="text-2xl mb-3 tracking-tight">
+                      {fields?.title ?? service.title}
+                    </h3>
                     <p className="text-gray-600 leading-relaxed">
-                      {service.description}
+                      {fields?.description ?? service.description}
                     </p>
                   </div>
                 </div>

@@ -1,6 +1,8 @@
+import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { CheckCircle2 } from "lucide-react";
+import { contentfulAssetUrl, getAbout } from "../services/contentService";
 
 const strengths = [
   "Professional design team",
@@ -10,6 +12,30 @@ const strengths = [
 ];
 
 export function AboutSection() {
+  const [about, setAbout] = useState<any | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    getAbout().then((items) => {
+      const fields = items?.[0]?.fields ?? null;
+      if (!cancelled && fields) setAbout(fields);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const imageFromCms =
+    about?.image && typeof about.image === "string"
+      ? about.image
+      : contentfulAssetUrl(about?.image);
+
+  const strengthsFromCms = Array.isArray(about?.strengths)
+    ? (about.strengths as unknown[])
+        .map((s) => (typeof s === "string" ? s : null))
+        .filter(Boolean)
+    : null;
+
   return (
     <section id="about" className="py-28 px-6 bg-white">
       <div className="max-w-7xl mx-auto">
@@ -34,8 +60,11 @@ export function AboutSection() {
               </div>
               
               <ImageWithFallback
-                src="https://images.unsplash.com/photo-1510832758362-af875829efcf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjcmVhdGl2ZSUyMHdvcmtzcGFjZSUyMGRlc2lnbnxlbnwxfHx8fDE3NjMxNDU2Mzh8MA&ixlib=rb-4.1.0&q=80&w=1080"
-                alt="Cirqle Creative Space"
+                src={
+                  imageFromCms ??
+                  "https://images.unsplash.com/photo-1510832758362-af875829efcf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjcmVhdGl2ZSUyMHdvcmtzcGFjZSUyMGRlc2lnbnxlbnwxfHx8fDE3NjMxNDU2Mzh8MA&ixlib=rb-4.1.0&q=80&w=1080"
+                }
+                alt={about?.imageAlt ?? "Cirqle Creative Space"}
                 className="w-full aspect-square object-cover"
               />
             </motion.div>
@@ -56,31 +85,31 @@ export function AboutSection() {
               transition={{ duration: 0.5 }}
               className="inline-block px-4 py-2 bg-gradient-to-r from-[#A259FF]/10 to-[#4CC3FF]/10 rounded-full mb-6 border border-[#A259FF]/20"
             >
-              <span className="text-sm">About Cirqle</span>
+              <span className="text-sm">{about?.badgeText ?? "About Cirqle"}</span>
             </motion.div>
             
             <h2 className="text-4xl md:text-5xl lg:text-6xl mb-8 tracking-tight">
-              Built on
+              {about?.headingPrefix ?? "Built on"}
               <span className="bg-gradient-to-r from-[#A259FF] to-[#4CC3FF] bg-clip-text text-transparent">
-                {" "}Excellence
+                {" "}
+                {about?.headingHighlight ?? "Excellence"}
               </span>
             </h2>
             
             <p className="text-xl text-gray-600 mb-6 leading-relaxed">
-              Cirqle brings together design expertise and modern technology 
-              to deliver exceptional results. Every project is crafted with 
-              precision and delivered with speed.
+              {about?.paragraph1 ??
+                "Cirqle brings together design expertise and modern technology to deliver exceptional results. Every project is crafted with precision and delivered with speed."}
             </p>
             
             <p className="text-lg text-gray-600 mb-10 leading-relaxed">
-              Specializing in supermarket campaigns while offering comprehensive 
-              creative services — from branding to digital solutions. We focus 
-              on quality, professionalism, and delivering results that exceed expectations.
+              {about?.paragraph2 ??
+                "Specializing in supermarket campaigns while offering comprehensive creative services — from branding to digital solutions. We focus on quality, professionalism, and delivering results that exceed expectations."}
             </p>
 
             {/* Strengths list */}
             <div className="space-y-5">
-              {strengths.map((strength, index) => (
+              {(strengthsFromCms?.length ? strengthsFromCms : strengths).map(
+                (strength, index) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, x: 20 }}

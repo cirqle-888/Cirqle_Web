@@ -1,12 +1,39 @@
+import React, { useEffect, useMemo, useState } from "react";
 import { motion } from "motion/react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { MessageCircle, Send } from "lucide-react";
+import { getContact } from "../services/contentService";
 
 export function ContactSection() {
+  const [contact, setContact] = useState<any | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    getContact().then((items) => {
+      const fields = items?.[0]?.fields ?? null;
+      if (!cancelled && fields) setContact(fields);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const whatsappNumberRaw = useMemo(() => {
+    return (
+      contact?.whatsappNumber ??
+      contact?.whatsapp ??
+      "+91 8129 5343 77"
+    );
+  }, [contact]);
+
+  const whatsappNumberDigits = useMemo(() => {
+    return String(whatsappNumberRaw).replace(/[^\d]/g, "");
+  }, [whatsappNumberRaw]);
+
   const handleWhatsAppClick = () => {
-    window.open('https://wa.me/918129534377', '_blank');
+    window.open(`https://wa.me/${whatsappNumberDigits}`, "_blank");
   };
 
   return (
@@ -40,14 +67,14 @@ export function ContactSection() {
             transition={{ duration: 0.5 }}
             className="inline-block px-4 py-2 bg-gradient-to-r from-[#A259FF]/10 to-[#4CC3FF]/10 rounded-full mb-6 border border-[#A259FF]/20"
           >
-            <span className="text-sm">Get in Touch</span>
+            <span className="text-sm">{contact?.badgeText ?? "Get in Touch"}</span>
           </motion.div>
           
           <h2 className="text-4xl md:text-5xl lg:text-6xl mb-6 tracking-tight">
-            Start Your Project
+            {contact?.title ?? "Start Your Project"}
           </h2>
           <p className="text-xl text-gray-600 leading-relaxed">
-            Let's create something exceptional together
+            {contact?.subtitle ?? "Let's create something exceptional together"}
           </p>
         </motion.div>
 
