@@ -62,7 +62,11 @@ export function ContactSection() {
           <div className="absolute inset-0 pointer-events-none z-10 micro-liquid">
             <div className="absolute inset-0 bg-gradient-to-br from-white/50 via-transparent to-transparent opacity-50"></div>
           </div>
-          
+          <form 
+          action="https://formspree.io/f/xdawkvje"
+          method="POST"
+          className="space-y-7 relative z-10"
+          >
           <form className="space-y-7 relative z-10">
             <div className="grid md:grid-cols-2 gap-7">
               <div>
