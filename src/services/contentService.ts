@@ -40,6 +40,12 @@ export async function getContact() {
   });
 }
 
+export async function getSupermarketFlyers() {
+  return await safeGetEntries({
+    content_type: "supermarketFlyers",
+  });
+}
+
 export function contentfulAssetUrl(asset: any): string | null {
   const url = asset?.fields?.file?.url;
   if (typeof url !== "string" || !url.length) return null;
