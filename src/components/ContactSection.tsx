@@ -69,3 +69,29 @@ return ( <section
       transition={{ duration: 0.7, delay: 0.2 }}
       className="liquid-glass-card rounded-3xl shadow-2xl p-10 md:p-14 relative overflow-hidden refra
 ```
+<div className="absolute inset-0 pointer-events-none z-10 micro-liquid">
+  <div className="absolute inset-0 bg-gradient-to-br from-white/50 via-transparent to-transparent opacity-50"></div>
+</div>
+
+<form
+  action="https://formspree.io/f/xdawkvje"
+  method="POST"
+  className="space-y-7 relative z-10"
+>
+  <input type="hidden" name="_subject" value="New Cirqle Inquiry" />
+  <input type="text" name="_gotcha" style={{ display: "none" }} />
+
+  <input name="name" placeholder="Name" className="w-full border p-3 rounded" />
+  <input name="email" placeholder="Email" className="w-full border p-3 rounded" />
+  <textarea name="message" placeholder="Project details" className="w-full border p-3 rounded" />
+
+  <button type="submit" className="bg-black text-white px-6 py-3 rounded">
+    Send Inquiry
+  </button>
+</form>
+
+</motion.div>
+</div>
+</section>
+);
+}
