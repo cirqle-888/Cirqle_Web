@@ -79,16 +79,74 @@ return ( <section
   method="POST"
   className="space-y-7 relative z-10"
 >
+  {/* hidden fields */}
   <input type="hidden" name="_subject" value="New Cirqle Inquiry" />
   <input type="text" name="_gotcha" style={{ display: "none" }} />
 
-  <input name="name" placeholder="Name" className="w-full border p-3 rounded" />
-  <input name="email" placeholder="Email" className="w-full border p-3 rounded" />
-  <textarea name="message" placeholder="Project details" className="w-full border p-3 rounded" />
+  <div className="grid md:grid-cols-2 gap-7">
+    <div>
+      <label htmlFor="name" className="block mb-3 text-sm">
+        Full Name
+      </label>
+      <Input
+        id="name"
+        name="name"
+        type="text"
+        placeholder="Your name"
+        required
+        className="rounded-2xl border-gray-200 focus:border-[#A259FF] h-14"
+      />
+    </div>
 
-  <button type="submit" className="bg-black text-white px-6 py-3 rounded">
+    <div>
+      <label htmlFor="whatsapp" className="block mb-3 text-sm">
+        WhatsApp Number
+      </label>
+      <Input
+        id="whatsapp"
+        name="whatsapp"
+        type="tel"
+        placeholder="+91 8129 5343 77"
+        className="rounded-2xl border-gray-200 focus:border-[#A259FF] h-14"
+      />
+    </div>
+  </div>
+
+  <div>
+    <label htmlFor="email" className="block mb-3 text-sm">
+      Email Address
+    </label>
+    <Input
+      id="email"
+      name="email"
+      type="email"
+      placeholder="farooq@cirqle.work"
+      required
+      className="rounded-2xl border-gray-200 focus:border-[#A259FF] h-14"
+    />
+  </div>
+
+  <div>
+    <label htmlFor="message" className="block mb-3 text-sm">
+      Project Details
+    </label>
+    <Textarea
+      id="message"
+      name="message"
+      placeholder="Tell us about your project..."
+      rows={6}
+      required
+      className="rounded-2xl border-gray-200 resize-none"
+    />
+  </div>
+
+  <Button
+    type="submit"
+    size="lg"
+    className="bg-gradient-to-r from-[#A259FF] to-[#4CC3FF] text-white rounded-full px-8 py-6"
+  >
     Send Inquiry
-  </button>
+  </Button>
 </form>
 
 </motion.div>
