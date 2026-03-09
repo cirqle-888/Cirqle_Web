@@ -1,9 +1,50 @@
+import React, { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { Button } from "./ui/button";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { Zap, Award, Clock3 } from "lucide-react";
+import { contentfulAssetUrl, getSupermarketFlyers } from "../services/contentService";
 
 export function SupermarketFlyers() {
+  const [flyers, setFlyers] = useState<string[]>([
+    "https://images.unsplash.com/photo-1747506533184-d58c53ce81e9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdXBlcm1hcmtldCUyMGZseWVyJTIwcHJvbW90aW9uYWx8ZW58MXx8fHwxNzYzMTkyODQ4fDA&ixlib=rb-4.1.0&q=80&w=1080&sig=1",
+    "https://images.unsplash.com/photo-1747506533184-d58c53ce81e9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdXBlcm1hcmtldCUyMGZseWVyJTIwcHJvbW90aW9uYWx8ZW58MXx8fHwxNzYzMTkyODQ4fDA&ixlib=rb-4.1.0&q=80&w=1080&sig=2",
+    "https://images.unsplash.com/photo-1747506533184-d58c53ce81e9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdXBlcm1hcmtldCUyMGZseWVyJTIwcHJvbW90aW9uYWx8ZW58MXx8fHwxNzYzMTkyODQ4fDA&ixlib=rb-4.1.0&q=80&w=1080&sig=3",
+    "https://images.unsplash.com/photo-1747506533184-d58c53ce81e9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdXBlcm1hcmtldCUyMGZseWVyJTIwcHJvbW90aW9uYWx8ZW58MXx8fHwxNzYzMTkyODQ4fDA&ixlib=rb-4.1.0&q=80&w=1080&sig=4",
+    "https://images.unsplash.com/photo-1747506533184-d58c53ce81e9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdXBlcm1hcmtldCUyMGZseWVyJTIwcHJvbW90aW9uYWx8ZW58MXx8fHwxNzYzMTkyODQ4fDA&ixlib=rb-4.1.0&q=80&w=1080&sig=5",
+    "https://images.unsplash.com/photo-1747506533184-d58c53ce81e9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdXBlcm1hcmtldCUyMGZseWVyJTIwcHJvbW90aW9uYWx8ZW58MXx8fHwxNzYzMTkyODQ4fDA&ixlib=rb-4.1.0&q=80&w=1080&sig=6",
+    "https://images.unsplash.com/photo-1747506533184-d58c53ce81e9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdXBlcm1hcmtldCUyMGZseWVyJTIwcHJvbW90aW9uYWx8ZW58MXx8fHwxNzYzMTkyODQ4fDA&ixlib=rb-4.1.0&q=80&w=1080&sig=7",
+    "https://images.unsplash.com/photo-1747506533184-d58c53ce81e9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdXBlcm1hcmtldCUyMGZseWVyJTIwcHJvbW90aW9uYWx8ZW58MXx8fHwxNzYzMTkyODQ4fDA&ixlib=rb-4.1.0&q=80&w=1080&sig=8",
+  ]);
+  const [sectionMeta, setSectionMeta] = useState<any | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    getSupermarketFlyers().then((items) => {
+      const fields = items?.[0]?.fields ?? null;
+      if (cancelled || !fields) return;
+
+      const flyersField = fields?.flyers;
+      const flyersFromCms = Array.isArray(flyersField)
+        ? flyersField
+            .map((asset: any) => {
+              if (typeof asset === "string") return asset;
+              return contentfulAssetUrl(asset);
+            })
+            .filter(Boolean)
+        : [];
+
+      if (!cancelled) {
+        setSectionMeta(fields);
+        if (flyersFromCms.length) setFlyers(flyersFromCms as string[]);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   return (
     <section className="py-28 px-6 bg-gradient-to-b from-gray-50 to-white relative overflow-hidden">
       {/* Background decoration */}
@@ -24,19 +65,19 @@ export function SupermarketFlyers() {
             transition={{ duration: 0.5 }}
             className="inline-block px-4 py-2 bg-gradient-to-r from-[#A259FF]/10 to-[#4CC3FF]/10 rounded-full mb-6 border border-[#A259FF]/20"
           >
-            <span className="text-sm">Core Specialty</span>
+            <span className="text-sm">{sectionMeta?.badgeText ?? "Core Specialty"}</span>
           </motion.div>
           
           <h2 className="text-4xl md:text-5xl lg:text-6xl mb-6 tracking-tight">
-            Supermarket Campaigns
+            {sectionMeta?.title ?? "Supermarket Campaigns"}
             <br />
             <span className="bg-gradient-to-r from-[#A259FF] to-[#4CC3FF] bg-clip-text text-transparent">
-              That Deliver Results
+              {sectionMeta?.highlight ?? "That Deliver Results"}
             </span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Professional promotional designs optimized for maximum impact 
-            across digital and print platforms.
+            {sectionMeta?.subtitle ??
+              "Professional promotional designs optimized for maximum impact across digital and print platforms."}
           </p>
         </motion.div>
 
@@ -75,13 +116,13 @@ export function SupermarketFlyers() {
 
         {/* Flyer samples - Clean Grid Layout */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-14">
-          {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+          {flyers.map((image, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.05 }}
+              transition={{ duration: 0.5, delay: (i + 1) * 0.05 }}
               whileHover={{ y: -8, scale: 1.02 }}
               className="group cursor-hover"
             >
@@ -93,8 +134,8 @@ export function SupermarketFlyers() {
                 
                 <div className="relative aspect-[3/4] overflow-hidden">
                   <ImageWithFallback
-                    src={`https://images.unsplash.com/photo-1747506533184-d58c53ce81e9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdXBlcm1hcmtldCUyMGZseWVyJTIwcHJvbW90aW9uYWx8ZW58MXx8fHwxNzYzMTkyODQ4fDA&ixlib=rb-4.1.0&q=80&w=1080&sig=${i}`}
-                    alt={`Supermarket Campaign ${i}`}
+                    src={image}
+                    alt={`Supermarket Campaign ${i + 1}`}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                   />
                   <motion.div 
