@@ -67,7 +67,8 @@ return ( <section
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.7, delay: 0.2 }}
-      className="liquid-glass-card rounded-3xl shadow-2xl p-10 md:p-14 relative overflow-hidden refra
+      className="liquid-glass-card rounded-3xl shadow-2xl p-10 md:p-14 relative overflow-hidden refraction edge-glow-hover"
+>
 ```
 <div className="absolute inset-0 pointer-events-none z-10 micro-liquid">
   <div className="absolute inset-0 bg-gradient-to-br from-white/50 via-transparent to-transparent opacity-50"></div>
