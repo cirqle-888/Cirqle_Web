@@ -129,53 +129,45 @@ export function HighlightProjects() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.05 }}
                 whileHover={{ y: -8, scale: 1.02 }}
-                className="group cursor-hover"
+                className="group cursor-pointer"
               >
-                <div className="relative overflow-hidden rounded-2xl liquid-glass-thumbnail shadow-xl hover:shadow-2xl transition-all duration-500 refraction liquid-ripple edge-glow-hover">
-                  {/* Micro liquid movement */}
-                  <div className="absolute inset-0 pointer-events-none z-20 micro-liquid">
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent opacity-50"></div>
-                  </div>
-                  
-                  {/* Image */}
-                  <div className="relative aspect-square overflow-hidden">
-                    <ImageWithFallback
-                      src={project.image}
-                      alt={project.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                    />
+                {/* We wrap the entire card in the DialogTrigger so clicking anywhere opens the image */}
+                <DialogTrigger asChild>
+                  <div className="relative overflow-hidden rounded-2xl liquid-glass-thumbnail shadow-xl hover:shadow-2xl transition-all duration-500 refraction liquid-ripple edge-glow-hover w-full text-left outline-none">
                     
-                    {/* Glass overlay on hover */}
-                    <motion.div 
-                      className="absolute inset-0 liquid-glass-dark flex items-end p-5"
-                      initial={{ opacity: 0 }}
-                      whileHover={{ opacity: 1 }}
-                      transition={{ duration: 0.4 }}
-                    >
-                      <div className="text-white relative z-10 w-full">
-                        <p className="text-xs text-gray-300 mb-1">{project.category}</p>
-                        <p className="font-medium">{project.title}</p>
+                    {/* Micro liquid movement */}
+                    <div className="absolute inset-0 pointer-events-none z-20 micro-liquid">
+                      <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent opacity-50"></div>
+                    </div>
+                    
+                    {/* Image */}
+                    <div className="relative aspect-square overflow-hidden">
+                      <ImageWithFallback
+                        src={project.image}
+                        alt={project.title}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                      />
+                      
+                      {/* Glass overlay on hover using Tailwind instead of Framer Motion to prevent event blocking */}
+                      <div className="absolute inset-0 liquid-glass-dark flex items-end p-5 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                        <div className="text-white relative z-10 w-full">
+                          <p className="text-xs text-gray-300 mb-1">{project.category}</p>
+                          <p className="font-medium">{project.title}</p>
+                        </div>
                       </div>
-                    </motion.div>
 
-                    {/* View Button Overlay */}
-                    <DialogTrigger asChild>
-                      <button className="absolute inset-0 m-auto w-24 h-10 bg-white/10 backdrop-blur-md border border-white/30 hover:bg-white/20 rounded-full flex items-center justify-center text-white font-medium opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-105 z-30 shadow-[0_0_20px_rgba(0,0,0,0.2)] cursor-pointer">
+                      {/* View Button Overlay (Now acts as a visual element, entire card is the button) */}
+                      <div className="absolute inset-0 m-auto w-24 h-10 bg-white/10 backdrop-blur-md border border-white/30 group-hover:bg-white/20 rounded-full flex items-center justify-center text-white font-medium opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:scale-105 z-30 shadow-[0_0_20px_rgba(0,0,0,0.2)]">
                         View
-                      </button>
-                    </DialogTrigger>
-                    
-                    {/* Glass Icon */}
-                    <motion.div 
-                      className="absolute top-3 right-3 w-9 h-9 liquid-glass-card rounded-full flex items-center justify-center edge-glow pointer-events-none"
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      whileHover={{ opacity: 1, scale: 1, rotate: 45 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <ArrowUpRight className="w-4 h-4 text-black" />
-                    </motion.div>
+                      </div>
+                      
+                      {/* Glass Icon */}
+                      <div className="absolute top-3 right-3 w-9 h-9 liquid-glass-card rounded-full flex items-center justify-center edge-glow pointer-events-none opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100 group-hover:rotate-45 transition-all duration-300 z-30">
+                        <ArrowUpRight className="w-4 h-4 text-black" />
+                      </div>
+                    </div>
                   </div>
-                </div>
+                </DialogTrigger>
               </motion.div>
 
               {/* Glass Modal Content */}
