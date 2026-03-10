@@ -43,7 +43,6 @@ export function SupermarketFlyers() {
             .filter(Boolean) as string[]
         : [];
 
-      // Use CMS flyers if available, otherwise fallback images stay active
       if (flyersFromCms.length > 0) {
         setFlyers(flyersFromCms);
       }
@@ -135,12 +134,11 @@ export function SupermarketFlyers() {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: (i + 1) * 0.05 }}
               whileHover={{ y: -8, scale: 1.02 }}
-              className="group cursor-pointer"
-              onClick={() => setSelectedFlyer(image)}
+              className="group relative"
             >
               <div className="relative overflow-hidden rounded-2xl liquid-glass-thumbnail shadow-xl hover:shadow-2xl transition-all duration-500 refraction liquid-ripple edge-glow-hover">
                 {/* Micro liquid movement */}
-                <div className="absolute inset-0 pointer-events-none z-20 micro-liquid">
+                <div className="absolute inset-0 pointer-events-none z-10 micro-liquid">
                   <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent opacity-50"></div>
                 </div>
                 
@@ -152,7 +150,7 @@ export function SupermarketFlyers() {
                   />
                   
                   {/* Hover Overlay Background */}
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5" />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5 pointer-events-none" />
 
                   {/* Centered View Button */}
                   <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 pointer-events-none">
@@ -160,6 +158,16 @@ export function SupermarketFlyers() {
                       <span className="text-white font-medium">View Flyer</span>
                     </div>
                   </div>
+
+                  {/* INVISIBLE CLICK BUTTON (Bulletproof Modal Trigger) */}
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setSelectedFlyer(image);
+                    }}
+                    className="absolute inset-0 w-full h-full z-20 cursor-hover outline-none"
+                    aria-label="View Flyer"
+                  />
                   
                 </div>
               </div>
@@ -187,8 +195,8 @@ export function SupermarketFlyers() {
 
       {/* Modal Viewer */}
       <Dialog 
-        open={!!selectedFlyer} 
-        onOpenChange={(open) => !open && setSelectedFlyer(null)}
+        open={selectedFlyer !== null} 
+        onOpenChange={(isOpen) => !isOpen && setSelectedFlyer(null)}
       >
         <DialogContent className="z-[9999] p-0 bg-black/60 backdrop-blur-xl border border-white/20 max-w-4xl w-[95vw] rounded-3xl overflow-hidden shadow-2xl">
           {selectedFlyer && (
