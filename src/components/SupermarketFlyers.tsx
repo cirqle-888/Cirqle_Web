@@ -121,7 +121,7 @@ export function SupermarketFlyers() {
                 <span className="font-medium">{item.label}</span>
               </motion.div>
             );
-          })}
+          });
         </motion.div>
 
         {/* Flyer samples - Clean Grid Layout */}
@@ -163,6 +163,7 @@ export function SupermarketFlyers() {
                   <button
                     onClick={(e) => {
                       e.preventDefault();
+                      e.stopPropagation();
                       setSelectedFlyer(image);
                     }}
                     className="absolute inset-0 w-full h-full z-20 cursor-hover outline-none"
@@ -193,20 +194,20 @@ export function SupermarketFlyers() {
         </motion.div>
       </div>
 
-      {/* Modal Viewer */}
+      {/* Modal Viewer - Completely stripped of background boundaries to force image visibility */}
       <Dialog 
         open={selectedFlyer !== null} 
-        onOpenChange={(isOpen) => !isOpen && setSelectedFlyer(null)}
+        onOpenChange={(isOpen) => {
+          if (!isOpen) setSelectedFlyer(null);
+        }}
       >
-        <DialogContent className="z-[9999] p-0 bg-black/60 backdrop-blur-xl border border-white/20 max-w-4xl w-[95vw] rounded-3xl overflow-hidden shadow-2xl">
+        <DialogContent className="!bg-transparent !border-none !shadow-none !max-w-[95vw] !w-fit p-0 flex items-center justify-center">
           {selectedFlyer && (
-            <div className="flex items-center justify-center max-h-[85vh] p-2">
-              <ImageWithFallback
-                src={selectedFlyer}
-                alt="Enlarged Flyer View"
-                className="max-w-full max-h-[85vh] w-auto h-auto object-contain rounded-xl"
-              />
-            </div>
+            <ImageWithFallback
+              src={selectedFlyer}
+              alt="Enlarged Flyer View"
+              className="max-h-[90vh] w-auto max-w-full object-contain rounded-xl shadow-2xl ring-1 ring-white/10"
+            />
           )}
           <DialogTitle className="sr-only">Enlarged Flyer</DialogTitle>
         </DialogContent>
