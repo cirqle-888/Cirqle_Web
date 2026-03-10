@@ -135,6 +135,7 @@ export function HighlightProjects() {
                   <button
                     onClick={(e) => {
                       e.preventDefault();
+                      e.stopPropagation();
                       setSelectedProject(project);
                     }}
                     className="absolute inset-0 w-full h-full z-20 cursor-hover outline-none"
@@ -152,35 +153,25 @@ export function HighlightProjects() {
         </div>
       </section>
 
-      {/* Modal Viewer */}
-
+      {/* Modal Viewer - Completely stripped of background boundaries to force image visibility */}
       <Dialog
         open={selectedProject !== null}
-        onOpenChange={(isOpen) => !isOpen && setSelectedProject(null)}
+        onOpenChange={(isOpen) => {
+          if (!isOpen) setSelectedProject(null);
+        }}
       >
-
-        <DialogContent className="z-[9999] p-0 bg-black/60 backdrop-blur-xl border border-white/20 max-w-5xl w-[95vw] rounded-3xl overflow-hidden shadow-2xl">
-
+        <DialogContent className="!bg-transparent !border-none !shadow-none !max-w-[95vw] !w-fit p-0 flex items-center justify-center">
           {selectedProject && (
-
-            <div className="flex items-center justify-center max-h-[85vh] p-2">
-
-              <ImageWithFallback
-                src={selectedProject.image}
-                alt={selectedProject.title}
-                className="max-w-full max-h-[85vh] w-auto h-auto object-contain rounded-xl"
-              />
-
-            </div>
-
+            <ImageWithFallback
+              src={selectedProject.image}
+              alt={selectedProject.title}
+              className="max-h-[90vh] w-auto max-w-full object-contain rounded-xl shadow-2xl ring-1 ring-white/10"
+            />
           )}
-
           <DialogTitle className="sr-only">
-            {selectedProject?.title}
+            {selectedProject?.title || "View Project"}
           </DialogTitle>
-
         </DialogContent>
-
       </Dialog>
 
     </>
