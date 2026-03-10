@@ -6,7 +6,6 @@ import { contentfulAssetUrl, getPortfolio } from "../services/contentService";
 import {
   Dialog,
   DialogContent,
-  DialogTrigger,
   DialogTitle,
 } from "./ui/dialog";
 
@@ -56,6 +55,9 @@ const projects = [
 export function HighlightProjects() {
   const [portfolioProjects, setPortfolioProjects] = useState(projects);
   const [sectionMeta, setSectionMeta] = useState<any | null>(null);
+  
+  // Track which project is currently being viewed in the modal
+  const [selectedProject, setSelectedProject] = useState<typeof projects[0] | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -122,69 +124,93 @@ export function HighlightProjects() {
         {/* Grid Layout */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {portfolioProjects.map((project, index) => (
-            <Dialog key={index}>
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.05 }}
-                whileHover={{ y: -8, scale: 1.02 }}
-                className="group cursor-pointer"
-              >
-                {/* We wrap the entire card in the DialogTrigger so clicking anywhere opens the image */}
-                <DialogTrigger asChild>
-                  <div className="relative overflow-hidden rounded-2xl liquid-glass-thumbnail shadow-xl hover:shadow-2xl transition-all duration-500 refraction liquid-ripple edge-glow-hover w-full text-left outline-none">
-                    
-                    {/* Micro liquid movement */}
-                    <div className="absolute inset-0 pointer-events-none z-20 micro-liquid">
-                      <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent opacity-50"></div>
-                    </div>
-                    
-                    {/* Image */}
-                    <div className="relative aspect-square overflow-hidden">
-                      <ImageWithFallback
-                        src={project.image}
-                        alt={project.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                      />
-                      
-                      {/* Glass overlay on hover using Tailwind instead of Framer Motion to prevent event blocking */}
-                      <div className="absolute inset-0 liquid-glass-dark flex items-end p-5 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                        <div className="text-white relative z-10 w-full">
-                          <p className="text-xs text-gray-300 mb-1">{project.category}</p>
-                          <p className="font-medium">{project.title}</p>
-                        </div>
-                      </div>
-
-                      {/* View Button Overlay (Now acts as a visual element, entire card is the button) */}
-                      <div className="absolute inset-0 m-auto w-24 h-10 bg-white/10 backdrop-blur-md border border-white/30 group-hover:bg-white/20 rounded-full flex items-center justify-center text-white font-medium opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:scale-105 z-30 shadow-[0_0_20px_rgba(0,0,0,0.2)]">
-                        View
-                      </div>
-                      
-                      {/* Glass Icon */}
-                      <div className="absolute top-3 right-3 w-9 h-9 liquid-glass-card rounded-full flex items-center justify-center edge-glow pointer-events-none opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100 group-hover:rotate-45 transition-all duration-300 z-30">
-                        <ArrowUpRight className="w-4 h-4 text-black" />
-                      </div>
-                    </div>
-                  </div>
-                </DialogTrigger>
-              </motion.div>
-
-              {/* Glass Modal Content */}
-              <DialogContent className="p-2 border border-white/20 bg-black/40 backdrop-blur-2xl shadow-2xl sm:max-w-4xl w-[95vw] rounded-2xl overflow-hidden">
-                <DialogTitle className="sr-only">{project.title}</DialogTitle>
-                <div className="relative w-full h-[80vh] flex items-center justify-center rounded-xl overflow-hidden bg-black/20">
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.05 }}
+              whileHover={{ y: -8, scale: 1.02 }}
+              className="group cursor-hover"
+            >
+              <div className="relative overflow-hidden rounded-2xl liquid-glass-thumbnail shadow-xl hover:shadow-2xl transition-all duration-500 refraction liquid-ripple edge-glow-hover">
+                {/* Micro liquid movement */}
+                <div className="absolute inset-0 pointer-events-none z-20 micro-liquid">
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent opacity-50"></div>
+                </div>
+                
+                {/* Image */}
+                <div className="relative aspect-square overflow-hidden">
                   <ImageWithFallback
                     src={project.image}
-                    alt={`Full view of ${project.title}`}
-                    className="max-w-full max-h-full object-contain drop-shadow-2xl"
+                    alt={project.title}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                   />
+                  
+                  {/* Glass overlay on hover */}
+                  <motion.div 
+                    className="absolute inset-0 liquid-glass-dark flex items-end p-5"
+                    initial={{ opacity: 0 }}
+                    whileHover={{ opacity: 1 }}
+                    transition={{ duration: 0.4 }}
+                  >
+                    <div className="text-white relative z-10 w-full">
+                      <p className="text-xs text-gray-300 mb-1">{project.category}</p>
+                      <p className="font-medium">{project.title}</p>
+                    </div>
+                  </motion.div>
+
+                  {/* Invisible Button covering the whole card for easy clicking */}
+                  <button 
+                    onClick={() => setSelectedProject(project)}
+                    className="absolute inset-0 w-full h-full z-30 cursor-pointer outline-none focus:outline-none flex items-center justify-center group/btn"
+                    aria-label={`View ${project.title}`}
+                  >
+                    {/* The visual "View" pill */}
+                    <span className="w-24 h-10 bg-white/10 backdrop-blur-md border border-white/30 hover:bg-white/20 rounded-full flex items-center justify-center text-white font-medium opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-[0_0_20px_rgba(0,0,0,0.2)] hover:scale-105">
+                      View
+                    </span>
+                  </button>
+                  
+                  {/* Glass Icon */}
+                  <motion.div 
+                    className="absolute top-3 right-3 w-9 h-9 liquid-glass-card rounded-full flex items-center justify-center edge-glow pointer-events-none"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    whileHover={{ opacity: 1, scale: 1, rotate: 45 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <ArrowUpRight className="w-4 h-4 text-black" />
+                  </motion.div>
                 </div>
-              </DialogContent>
-            </Dialog>
+              </div>
+            </motion.div>
           ))}
         </div>
       </div>
+
+      {/* A Single Global Dialog to prevent portal z-index bugs */}
+      <Dialog 
+        open={!!selectedProject} 
+        onOpenChange={(open) => {
+          if (!open) setSelectedProject(null);
+        }}
+      >
+        <DialogContent className="p-2 border border-white/20 bg-black/40 backdrop-blur-2xl shadow-2xl sm:max-w-5xl w-[95vw] rounded-2xl overflow-hidden">
+          <DialogTitle className="sr-only">
+            {selectedProject?.title ?? "Project View"}
+          </DialogTitle>
+          
+          {selectedProject && (
+            <div className="relative w-full h-[80vh] flex items-center justify-center rounded-xl overflow-hidden bg-black/20">
+              <ImageWithFallback
+                src={selectedProject.image}
+                alt={`Full view of ${selectedProject.title}`}
+                className="max-w-full max-h-full object-contain drop-shadow-2xl"
+              />
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }
