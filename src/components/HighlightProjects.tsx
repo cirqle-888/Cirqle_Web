@@ -100,7 +100,7 @@ export function HighlightProjects() {
               <motion.div
                 key={index}
                 whileHover={{ y: -8, scale: 1.02 }}
-                className="group cursor-hover"
+                className="group cursor-pointer"
                 onClick={() => setSelectedProject(project)}
               >
 
@@ -116,21 +116,20 @@ export function HighlightProjects() {
 
                   </div>
 
-                  {/* Hover Overlay */}
-                  <div className="absolute inset-0 bg-black/30 flex items-end p-4 opacity-0 group-hover:opacity-100 transition">
-
-                    <div className="text-white">
-                      <p className="text-xs">{project.category}</p>
-                      <p className="font-medium">{project.title}</p>
+                  {/* Hover Overlay Background & Text */}
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5">
+                    <div className="text-white z-10 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                      <p className="text-xs text-white/80 uppercase tracking-wider mb-1">{project.category}</p>
+                      <p className="font-medium text-lg">{project.title}</p>
                     </div>
-
                   </div>
 
-                  {/* View Icon */}
-                  <div className="absolute top-3 right-3 w-9 h-9 bg-white/10 backdrop-blur rounded-full flex items-center justify-center">
-
-                    <ArrowUpRight className="w-4 h-4 text-white" />
-
+                  {/* Centered View Button */}
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 pointer-events-none">
+                    <div className="px-6 py-2.5 bg-white/20 backdrop-blur-md border border-white/40 rounded-full flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 shadow-xl">
+                      <span className="text-white font-medium">View Project</span>
+                      <ArrowUpRight className="w-4 h-4 text-white" />
+                    </div>
                   </div>
 
                 </div>
@@ -151,16 +150,16 @@ export function HighlightProjects() {
         onOpenChange={(open) => !open && setSelectedProject(null)}
       >
 
-        <DialogContent className="z-[9999] p-0 bg-black/60 backdrop-blur-xl border border-white/20 max-w-5xl w-[95vw] rounded-3xl overflow-hidden">
+        <DialogContent className="z-[9999] p-0 bg-black/60 backdrop-blur-xl border border-white/20 max-w-5xl w-[95vw] rounded-3xl overflow-hidden shadow-2xl">
 
           {selectedProject && (
 
-            <div className="flex items-center justify-center max-h-[85vh]">
+            <div className="flex items-center justify-center max-h-[85vh] p-2">
 
               <ImageWithFallback
                 src={selectedProject.image}
                 alt={selectedProject.title}
-                className="w-full h-auto object-contain"
+                className="max-w-full max-h-[85vh] w-auto h-auto object-contain rounded-xl"
               />
 
             </div>
