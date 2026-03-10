@@ -4,6 +4,7 @@ import { Button } from "./ui/button";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { Zap, Award, Clock3 } from "lucide-react";
 import { contentfulAssetUrl, getSupermarketFlyers } from "../services/contentService";
+import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
 
 const FALLBACK_FLYERS = [
   "https://images.unsplash.com/photo-1747506533184-d58c53ce81e9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdXBlcm1hcmtldCUyMGZseWVyJTIwcHJvbW90aW9uYWx8ZW58MXx8fHwxNzYzMTkyODQ4fDA&ixlib=rb-4.1.0&q=80&w=1080&sig=1",
@@ -19,6 +20,7 @@ const FALLBACK_FLYERS = [
 export function SupermarketFlyers() {
   const [flyers, setFlyers] = useState<string[]>(FALLBACK_FLYERS);
   const [sectionMeta, setSectionMeta] = useState<any | null>(null);
+  const [selectedFlyer, setSelectedFlyer] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -133,7 +135,8 @@ export function SupermarketFlyers() {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: (i + 1) * 0.05 }}
               whileHover={{ y: -8, scale: 1.02 }}
-              className="group cursor-hover"
+              className="group cursor-pointer"
+              onClick={() => setSelectedFlyer(image)}
             >
               <div className="relative overflow-hidden rounded-2xl liquid-glass-thumbnail shadow-xl hover:shadow-2xl transition-all duration-500 refraction liquid-ripple edge-glow-hover">
                 {/* Micro liquid movement */}
@@ -147,12 +150,17 @@ export function SupermarketFlyers() {
                     alt={`Supermarket Campaign ${i + 1}`}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                   />
-                  <motion.div 
-                    className="absolute inset-0 liquid-glass-dark"
-                    initial={{ opacity: 0 }}
-                    whileHover={{ opacity: 1 }}
-                    transition={{ duration: 0.4 }}
-                  />
+                  
+                  {/* Hover Overlay Background */}
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5" />
+
+                  {/* Centered View Button */}
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 pointer-events-none">
+                    <div className="px-6 py-2.5 bg-white/20 backdrop-blur-md border border-white/40 rounded-full flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 shadow-xl">
+                      <span className="text-white font-medium">View Flyer</span>
+                    </div>
+                  </div>
+                  
                 </div>
               </div>
             </motion.div>
@@ -176,6 +184,25 @@ export function SupermarketFlyers() {
           </motion.div>
         </motion.div>
       </div>
+
+      {/* Modal Viewer */}
+      <Dialog 
+        open={!!selectedFlyer} 
+        onOpenChange={(open) => !open && setSelectedFlyer(null)}
+      >
+        <DialogContent className="z-[9999] p-0 bg-black/60 backdrop-blur-xl border border-white/20 max-w-4xl w-[95vw] rounded-3xl overflow-hidden shadow-2xl">
+          {selectedFlyer && (
+            <div className="flex items-center justify-center max-h-[85vh] p-2">
+              <ImageWithFallback
+                src={selectedFlyer}
+                alt="Enlarged Flyer View"
+                className="max-w-full max-h-[85vh] w-auto h-auto object-contain rounded-xl"
+              />
+            </div>
+          )}
+          <DialogTitle className="sr-only">Enlarged Flyer</DialogTitle>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }
