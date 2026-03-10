@@ -6,8 +6,8 @@ import { contentfulAssetUrl, getPortfolio } from "../services/contentService";
 import {
   Dialog,
   DialogContent,
+  DialogTrigger,
   DialogTitle,
-  DialogDescription,
 } from "./ui/dialog";
 
 const projects = [
@@ -53,12 +53,9 @@ const projects = [
   },
 ];
 
-type Project = typeof projects[0];
-
 export function HighlightProjects() {
   const [portfolioProjects, setPortfolioProjects] = useState(projects);
   const [sectionMeta, setSectionMeta] = useState<any | null>(null);
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -95,39 +92,38 @@ export function HighlightProjects() {
   }, []);
 
   return (
-    <>
-      <section className="py-28 px-6 bg-white">
-        <div className="max-w-7xl mx-auto">
+    <section className="py-28 px-6 bg-white">
+      <div className="max-w-7xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+          className="text-center mb-20"
+        >
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.7 }}
-            className="text-center mb-20"
+            transition={{ duration: 0.5 }}
+            className="inline-block px-4 py-2 bg-gradient-to-r from-[#A259FF]/10 to-[#4CC3FF]/10 rounded-full mb-6 border border-[#A259FF]/20"
           >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="inline-block px-4 py-2 bg-gradient-to-r from-[#A259FF]/10 to-[#4CC3FF]/10 rounded-full mb-6 border border-[#A259FF]/20"
-            >
-              <span className="text-sm">{sectionMeta?.badgeText ?? "Featured Work"}</span>
-            </motion.div>
-            
-            <h2 className="text-4xl md:text-5xl lg:text-6xl mb-6 tracking-tight">
-              {sectionMeta?.title ?? "Excellence in Every Project"}
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-              {sectionMeta?.subtitle ?? "Crafted with precision, delivered with speed"}
-            </p>
+            <span className="text-sm">{sectionMeta?.badgeText ?? "Featured Work"}</span>
           </motion.div>
+          
+          <h2 className="text-4xl md:text-5xl lg:text-6xl mb-6 tracking-tight">
+            {sectionMeta?.title ?? "Excellence in Every Project"}
+          </h2>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+            {sectionMeta?.subtitle ?? "Crafted with precision, delivered with speed"}
+          </p>
+        </motion.div>
 
-          {/* Grid Layout */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {portfolioProjects.map((project, index) => (
+        {/* Grid Layout */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {portfolioProjects.map((project, index) => (
+            <Dialog key={index}>
               <motion.div
-                key={index}
                 initial={{ opacity: 0, scale: 0.9 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
@@ -160,60 +156,43 @@ export function HighlightProjects() {
                         <p className="text-xs text-gray-300 mb-1">{project.category}</p>
                         <p className="font-medium">{project.title}</p>
                       </div>
-
-                      {/* View Button */}
-                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                        <button
-                          onClick={() => setSelectedProject(project)}
-                          className="pointer-events-auto px-6 py-2.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white font-medium shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] hover:bg-white/20 hover:scale-105 transition-all duration-300"
-                        >
-                          View
-                        </button>
-                      </div>
                     </motion.div>
+
+                    {/* View Button Overlay */}
+                    <DialogTrigger asChild>
+                      <button className="absolute inset-0 m-auto w-24 h-10 bg-white/10 backdrop-blur-md border border-white/30 hover:bg-white/20 rounded-full flex items-center justify-center text-white font-medium opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-105 z-30 shadow-[0_0_20px_rgba(0,0,0,0.2)] cursor-pointer">
+                        View
+                      </button>
+                    </DialogTrigger>
                     
                     {/* Glass Icon */}
                     <motion.div 
-                      className="absolute top-3 right-3 w-9 h-9 liquid-glass-card rounded-full flex items-center justify-center edge-glow"
+                      className="absolute top-3 right-3 w-9 h-9 liquid-glass-card rounded-full flex items-center justify-center edge-glow pointer-events-none"
                       initial={{ opacity: 0, scale: 0.8 }}
                       whileHover={{ opacity: 1, scale: 1, rotate: 45 }}
                       transition={{ duration: 0.3 }}
                     >
-                      <ArrowUpRight className="w-4 h-4 text-white drop-shadow-md" />
+                      <ArrowUpRight className="w-4 h-4 text-black" />
                     </motion.div>
                   </div>
                 </div>
               </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* Image Modal */}
-      <Dialog open={!!selectedProject} onOpenChange={(isOpen) => !isOpen && setSelectedProject(null)}>
-        <DialogContent className="max-w-5xl bg-white/10 backdrop-blur-2xl border-white/20 shadow-2xl p-0 overflow-hidden rounded-2xl sm:rounded-3xl border">
-          <DialogTitle className="sr-only">{selectedProject?.title}</DialogTitle>
-          <DialogDescription className="sr-only">{selectedProject?.category}</DialogDescription>
-          
-          {selectedProject && (
-            <div className="relative w-full h-full max-h-[85vh] flex items-center justify-center bg-black/40">
-              <ImageWithFallback
-                src={selectedProject.image}
-                alt={selectedProject.title}
-                className="w-full h-full max-h-[85vh] object-contain"
-              />
-              
-              {/* Subtle Modal Info Overlay */}
-              <div className="absolute bottom-6 left-6 right-16 pointer-events-none">
-                <div className="inline-block liquid-glass-card backdrop-blur-md bg-black/30 border border-white/10 px-6 py-3 rounded-2xl text-white shadow-lg">
-                  <h3 className="text-xl font-semibold tracking-tight">{selectedProject.title}</h3>
-                  <p className="text-gray-300 text-sm mt-0.5">{selectedProject.category}</p>
+              {/* Glass Modal Content */}
+              <DialogContent className="p-2 border border-white/20 bg-black/40 backdrop-blur-2xl shadow-2xl sm:max-w-4xl w-[95vw] rounded-2xl overflow-hidden">
+                <DialogTitle className="sr-only">{project.title}</DialogTitle>
+                <div className="relative w-full h-[80vh] flex items-center justify-center rounded-xl overflow-hidden bg-black/20">
+                  <ImageWithFallback
+                    src={project.image}
+                    alt={`Full view of ${project.title}`}
+                    className="max-w-full max-h-full object-contain drop-shadow-2xl"
+                  />
                 </div>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-    </>
+              </DialogContent>
+            </Dialog>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
