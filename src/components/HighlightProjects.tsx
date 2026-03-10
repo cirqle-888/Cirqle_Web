@@ -100,8 +100,7 @@ export function HighlightProjects() {
               <motion.div
                 key={index}
                 whileHover={{ y: -8, scale: 1.02 }}
-                className="group cursor-pointer"
-                onClick={() => setSelectedProject(project)}
+                className="group relative"
               >
 
                 <div className="relative overflow-hidden rounded-2xl liquid-glass-thumbnail shadow-xl hover:shadow-2xl">
@@ -116,8 +115,8 @@ export function HighlightProjects() {
 
                   </div>
 
-                  {/* Hover Overlay Background & Text */}
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5">
+                  {/* Hover Overlay Background & Text - Added pointer-events-none */}
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5 pointer-events-none">
                     <div className="text-white z-10 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
                       <p className="text-xs text-white/80 uppercase tracking-wider mb-1">{project.category}</p>
                       <p className="font-medium text-lg">{project.title}</p>
@@ -131,6 +130,16 @@ export function HighlightProjects() {
                       <ArrowUpRight className="w-4 h-4 text-white" />
                     </div>
                   </div>
+
+                  {/* INVISIBLE CLICK BUTTON (Bulletproof Modal Trigger) */}
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setSelectedProject(project);
+                    }}
+                    className="absolute inset-0 w-full h-full z-20 cursor-hover outline-none"
+                    aria-label={`View ${project.title}`}
+                  />
 
                 </div>
 
@@ -146,8 +155,8 @@ export function HighlightProjects() {
       {/* Modal Viewer */}
 
       <Dialog
-        open={!!selectedProject}
-        onOpenChange={(open) => !open && setSelectedProject(null)}
+        open={selectedProject !== null}
+        onOpenChange={(isOpen) => !isOpen && setSelectedProject(null)}
       >
 
         <DialogContent className="z-[9999] p-0 bg-black/60 backdrop-blur-xl border border-white/20 max-w-5xl w-[95vw] rounded-3xl overflow-hidden shadow-2xl">
