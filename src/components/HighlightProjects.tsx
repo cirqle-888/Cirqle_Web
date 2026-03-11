@@ -3,153 +3,83 @@ import { motion } from "motion/react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { ArrowUpRight } from "lucide-react";
 import { contentfulAssetUrl, getPortfolio } from "../services/contentService";
-import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
-
-const projects = [
-  {
-    title: "Supermarket Campaign",
-    category: "Promotional Design",
-    image: "https://images.unsplash.com/photo-1747506533184-d58c53ce81e9?w=1200",
-  },
-];
+import { Dialog, DialogContent, DialogTitle } from "./ui/dialog"; // Ensure path is correct
 
 export function HighlightProjects() {
-  const [portfolioProjects, setPortfolioProjects] = useState(projects);
+  const [portfolioProjects, setPortfolioProjects] = useState<any[]>([]);
   const [sectionMeta, setSectionMeta] = useState<any | null>(null);
   const [selectedProject, setSelectedProject] = useState<any | null>(null);
 
   useEffect(() => {
     let cancelled = false;
-
     getPortfolio().then((items) => {
       if (cancelled || !Array.isArray(items) || !items.length) return;
-
       const meta = items?.[0]?.fields ?? null;
-
-      const mapped = items
-        .map((entry: any) => {
-          const fields = entry?.fields ?? {};
-          const rawImage = fields?.image;
-
-          const image =
-            typeof rawImage === "string"
-              ? rawImage
-              : contentfulAssetUrl(rawImage) ?? null;
-
-          if (!fields?.title || !fields?.category || !image) return null;
-
-          return {
-            title: String(fields.title),
-            category: String(fields.category),
-            image,
-          };
-        })
-        .filter(Boolean);
+      const mapped = items.map((entry: any) => {
+        const fields = entry?.fields ?? {};
+        const rawImage = fields?.image;
+        const image = typeof rawImage === "string" ? rawImage : contentfulAssetUrl(rawImage) ?? null;
+        if (!fields?.title || !fields?.category || !image) return null;
+        return { title: String(fields.title), category: String(fields.category), image };
+      }).filter(Boolean);
 
       if (!cancelled && mapped.length) {
         setSectionMeta(meta);
         setPortfolioProjects(mapped);
       }
     });
-
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, []);
 
   return (
     <>
       <section className="py-28 px-6 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7 }}
-            className="text-center mb-20"
-          >
-            <div className="inline-block px-4 py-2 bg-gradient-to-r from-[#A259FF]/10 to-[#4CC3FF]/10 rounded-full mb-6 border border-[#A259FF]/20">
-              <span className="text-sm">
-                {sectionMeta?.badgeText ?? "Featured Work"}
-              </span>
-            </div>
+        <div className="max-w-7xl mx-auto text-center mb-20">
+          <div className="inline-block px-4 py-2 bg-gradient-to-r from-[#A259FF]/10 to-[#4CC3FF]/10 rounded-full mb-6 border border-[#A259FF]/20">
+            <span className="text-sm">{sectionMeta?.badgeText ?? "Featured Work"}</span>
+          </div>
+          <h2 className="text-4xl md:text-5xl lg:text-6xl mb-6 tracking-tight">{sectionMeta?.title ?? "Excellence in Every Project"}</h2>
+        </div>
 
-            <h2 className="text-4xl md:text-5xl lg:text-6xl mb-6 tracking-tight">
-              {sectionMeta?.title ?? "Excellence in Every Project"}
-            </h2>
-
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              {sectionMeta?.subtitle ?? "Crafted with precision, delivered with speed"}
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {portfolioProjects.map((project, index) => (
-              <motion.div
-                key={index}
-                whileHover={{ y: -8, scale: 1.02 }}
-                className="group relative cursor-pointer cursor-hover"
-                onClick={() => setSelectedProject(project)}
-              >
-                <div className="relative overflow-hidden rounded-2xl liquid-glass-thumbnail shadow-xl hover:shadow-2xl">
-                  <div className="aspect-square overflow-hidden">
-                    <ImageWithFallback
-                      src={project.image}
-                      alt={project.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                    />
-                  </div>
-
-                  {/* Hover Overlay Background & Text */}
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5 pointer-events-none">
-                    <div className="text-white z-10 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-                      <p className="text-xs text-white/80 uppercase tracking-wider mb-1">{project.category}</p>
-                      <p className="font-medium text-lg">{project.title}</p>
-                    </div>
-                  </div>
-
-                  {/* Centered View Button */}
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 pointer-events-none">
-                    <div className="px-6 py-2.5 bg-white/20 backdrop-blur-md border border-white/40 rounded-full flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 shadow-xl">
-                      <span className="text-white font-medium">View Project</span>
-                      <ArrowUpRight className="w-4 h-4 text-white" />
-                    </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+          {portfolioProjects.map((project, index) => (
+            <motion.div
+              key={index}
+              whileHover={{ y: -8, scale: 1.02 }}
+              className="group relative cursor-pointer cursor-hover"
+              onClick={() => setSelectedProject(project)} // Triggers the popup
+            >
+              <div className="relative overflow-hidden rounded-2xl liquid-glass-thumbnail shadow-xl">
+                <ImageWithFallback src={project.image} alt={project.title} className="w-full aspect-square object-cover" />
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
+                  <div className="px-6 py-2.5 bg-white/20 backdrop-blur-md border border-white/40 rounded-full flex items-center gap-2">
+                    <span className="text-white font-medium">View Project</span>
+                    <ArrowUpRight className="w-4 h-4 text-white" />
                   </div>
                 </div>
-              </motion.div>
-            ))}
-          </div>
+              </div>
+            </motion.div>
+          ))}
         </div>
       </section>
 
-      {/* Modal Viewer - Stripped background so image is perfectly visible */}
-      <Dialog
-        open={!!selectedProject}
-        onOpenChange={(isOpen) => {
-          if (!isOpen) setSelectedProject(null);
-        }}
-      >
-        <DialogContent className="!bg-transparent !border-none !shadow-none !max-w-[95vw] !w-fit p-0 flex items-center justify-center">
+      {/* The Popup Logic */}
+      <Dialog open={!!selectedProject} onOpenChange={(open) => !open && setSelectedProject(null)}>
+        <DialogContent className="!bg-transparent !border-none !shadow-none !max-w-[95vw] !w-fit p-0 flex items-center justify-center z-[100]">
           {selectedProject && (
-            <div className="relative flex items-center justify-center group">
-              <ImageWithFallback
-                src={selectedProject.image}
-                alt={selectedProject.title}
-                className="max-h-[90vh] w-auto max-w-full object-contain rounded-xl shadow-2xl ring-1 ring-white/10"
+            <div className="relative">
+              <ImageWithFallback 
+                src={selectedProject.image} 
+                alt={selectedProject.title} 
+                className="max-h-[85vh] w-auto max-w-full object-contain rounded-xl shadow-2xl" 
               />
-              
-              {/* Your custom info overlay */}
-              <div className="absolute bottom-6 left-0 right-0 flex justify-center pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <div className="inline-block liquid-glass-card backdrop-blur-md bg-black/40 border border-white/20 p-4 rounded-2xl text-white shadow-xl text-center">
-                  <h3 className="text-xl font-semibold tracking-tight">{selectedProject.title}</h3>
-                  <p className="text-gray-300 text-sm mt-1">{selectedProject.category}</p>
-                </div>
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-md p-4 rounded-xl text-white text-center min-w-[200px]">
+                <h3 className="text-lg font-bold">{selectedProject.title}</h3>
+                <p className="text-sm text-gray-300">{selectedProject.category}</p>
               </div>
             </div>
           )}
-          <DialogTitle className="sr-only">
-            {selectedProject?.title || "View Project"}
-          </DialogTitle>
+          <DialogTitle className="sr-only">{selectedProject?.title ?? "Project View"}</DialogTitle>
         </DialogContent>
       </Dialog>
     </>
