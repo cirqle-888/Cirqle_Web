@@ -73,9 +73,11 @@ export function HighlightProjects() {
                 {sectionMeta?.badgeText ?? "Featured Work"}
               </span>
             </div>
+
             <h2 className="text-4xl md:text-5xl lg:text-6xl mb-6 tracking-tight">
               {sectionMeta?.title ?? "Excellence in Every Project"}
             </h2>
+
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               {sectionMeta?.subtitle ?? "Crafted with precision, delivered with speed"}
             </p>
@@ -99,7 +101,7 @@ export function HighlightProjects() {
                   </div>
 
                   {/* Hover Overlay Background & Text */}
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5">
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5 pointer-events-none">
                     <div className="text-white z-10 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
                       <p className="text-xs text-white/80 uppercase tracking-wider mb-1">{project.category}</p>
                       <p className="font-medium text-lg">{project.title}</p>
@@ -120,7 +122,7 @@ export function HighlightProjects() {
         </div>
       </section>
 
-      {/* Fully styled Modal Viewer */}
+      {/* Modal Viewer - Stripped background so image is perfectly visible */}
       <Dialog
         open={!!selectedProject}
         onOpenChange={(isOpen) => {
@@ -129,14 +131,24 @@ export function HighlightProjects() {
       >
         <DialogContent className="!bg-transparent !border-none !shadow-none !max-w-[95vw] !w-fit p-0 flex items-center justify-center">
           {selectedProject && (
-            <ImageWithFallback
-              src={selectedProject.image}
-              alt={selectedProject.title}
-              className="max-h-[90vh] w-auto max-w-full object-contain rounded-xl shadow-2xl ring-1 ring-white/10"
-            />
+            <div className="relative flex items-center justify-center group">
+              <ImageWithFallback
+                src={selectedProject.image}
+                alt={selectedProject.title}
+                className="max-h-[90vh] w-auto max-w-full object-contain rounded-xl shadow-2xl ring-1 ring-white/10"
+              />
+              
+              {/* Your custom info overlay */}
+              <div className="absolute bottom-6 left-0 right-0 flex justify-center pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <div className="inline-block liquid-glass-card backdrop-blur-md bg-black/40 border border-white/20 p-4 rounded-2xl text-white shadow-xl text-center">
+                  <h3 className="text-xl font-semibold tracking-tight">{selectedProject.title}</h3>
+                  <p className="text-gray-300 text-sm mt-1">{selectedProject.category}</p>
+                </div>
+              </div>
+            </div>
           )}
           <DialogTitle className="sr-only">
-            {selectedProject?.title || "Project Image"}
+            {selectedProject?.title || "View Project"}
           </DialogTitle>
         </DialogContent>
       </Dialog>
