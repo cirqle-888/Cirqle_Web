@@ -131,7 +131,7 @@ export function SupermarketFlyers() {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: (i + 1) * 0.05 }}
               whileHover={{ y: -8, scale: 1.02 }}
-              className="group relative cursor-pointer"
+              className="group relative cursor-pointer cursor-hover"
               onClick={() => setSelectedFlyer(image)}
             >
               <div className="relative overflow-hidden rounded-2xl liquid-glass-thumbnail shadow-xl hover:shadow-2xl transition-all duration-500 refraction liquid-ripple edge-glow-hover">
@@ -171,6 +171,7 @@ export function SupermarketFlyers() {
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
             <Button
               size="lg"
+              onClick={() => window.open('/portfolio', '_self')}
               className="bg-gradient-to-r from-[#A259FF] to-[#4CC3FF] text-white hover:opacity-90 transition-opacity px-10 py-7 text-lg rounded-full shadow-lg shadow-[#A259FF]/25 cursor-hover"
             >
               View Full Portfolio
