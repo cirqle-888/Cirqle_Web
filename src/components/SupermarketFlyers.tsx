@@ -4,6 +4,7 @@ import { Button } from "./ui/button";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { Zap, Award, Clock3 } from "lucide-react";
 import { contentfulAssetUrl, getSupermarketFlyers } from "../services/contentService";
+import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
 
 const FALLBACK_FLYERS = [
   "https://images.unsplash.com/photo-1747506533184-d58c53ce81e9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdXBlcm1hcmtldCUyMGZseWVyJTIwcHJvbW90aW9uYWx8ZW58MXx8fHwxNzYzMTkyODQ4fDA&ixlib=rb-4.1.0&q=80&w=1080&sig=1",
@@ -19,6 +20,7 @@ const FALLBACK_FLYERS = [
 export function SupermarketFlyers() {
   const [flyers, setFlyers] = useState<string[]>(FALLBACK_FLYERS);
   const [sectionMeta, setSectionMeta] = useState<any | null>(null);
+  const [selectedFlyer, setSelectedFlyer] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -41,7 +43,6 @@ export function SupermarketFlyers() {
             .filter(Boolean) as string[]
         : [];
 
-      // Use CMS flyers if available, otherwise fallback images stay active
       if (flyersFromCms.length > 0) {
         setFlyers(flyersFromCms);
       }
@@ -56,7 +57,6 @@ export function SupermarketFlyers() {
 
   return (
     <section className="py-28 px-6 bg-gradient-to-b from-gray-50 to-white relative overflow-hidden">
-      {/* Background decoration */}
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-br from-[#A259FF]/10 to-[#4CC3FF]/10 rounded-full blur-3xl"></div>
       
       <div className="max-w-7xl mx-auto relative z-10">
@@ -90,7 +90,6 @@ export function SupermarketFlyers() {
           </p>
         </motion.div>
 
-        {/* Feature badges */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -123,7 +122,6 @@ export function SupermarketFlyers() {
           })}
         </motion.div>
 
-        {/* Flyer samples - Clean Grid Layout */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-14">
           {flyers.map((image, i) => (
             <motion.div
@@ -133,11 +131,11 @@ export function SupermarketFlyers() {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: (i + 1) * 0.05 }}
               whileHover={{ y: -8, scale: 1.02 }}
-              className="group cursor-hover"
+              className="group relative cursor-pointer"
+              onClick={() => setSelectedFlyer(image)}
             >
               <div className="relative overflow-hidden rounded-2xl liquid-glass-thumbnail shadow-xl hover:shadow-2xl transition-all duration-500 refraction liquid-ripple edge-glow-hover">
-                {/* Micro liquid movement */}
-                <div className="absolute inset-0 pointer-events-none z-20 micro-liquid">
+                <div className="absolute inset-0 pointer-events-none z-10 micro-liquid">
                   <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent opacity-50"></div>
                 </div>
                 
@@ -147,12 +145,17 @@ export function SupermarketFlyers() {
                     alt={`Supermarket Campaign ${i + 1}`}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                   />
-                  <motion.div 
-                    className="absolute inset-0 liquid-glass-dark"
-                    initial={{ opacity: 0 }}
-                    whileHover={{ opacity: 1 }}
-                    transition={{ duration: 0.4 }}
-                  />
+                  
+                  {/* Hover Overlay Background */}
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5" />
+
+                  {/* Centered View Button */}
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 pointer-events-none">
+                    <div className="px-6 py-2.5 bg-white/20 backdrop-blur-md border border-white/40 rounded-full flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 shadow-xl">
+                      <span className="text-white font-medium">View Flyer</span>
+                    </div>
+                  </div>
+                  
                 </div>
               </div>
             </motion.div>
@@ -176,6 +179,25 @@ export function SupermarketFlyers() {
           </motion.div>
         </motion.div>
       </div>
+
+      {/* Fully styled Modal Viewer */}
+      <Dialog 
+        open={!!selectedFlyer} 
+        onOpenChange={(isOpen) => {
+          if (!isOpen) setSelectedFlyer(null);
+        }}
+      >
+        <DialogContent className="!bg-transparent !border-none !shadow-none !max-w-[95vw] !w-fit p-0 flex items-center justify-center">
+          {selectedFlyer && (
+            <ImageWithFallback
+              src={selectedFlyer}
+              alt="Enlarged Flyer View"
+              className="max-h-[90vh] w-auto max-w-full object-contain rounded-xl shadow-2xl ring-1 ring-white/10"
+            />
+          )}
+          <DialogTitle className="sr-only">Enlarged Flyer</DialogTitle>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }
