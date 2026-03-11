@@ -88,7 +88,7 @@ export function HighlightProjects() {
               <motion.div
                 key={index}
                 whileHover={{ y: -8, scale: 1.02 }}
-                className="group relative cursor-pointer"
+                className="group relative cursor-pointer cursor-hover"
                 onClick={() => setSelectedProject(project)}
               >
                 <div className="relative overflow-hidden rounded-2xl liquid-glass-thumbnail shadow-xl hover:shadow-2xl">
