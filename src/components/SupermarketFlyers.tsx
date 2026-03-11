@@ -147,7 +147,7 @@ export function SupermarketFlyers() {
                   />
                   
                   {/* Hover Overlay Background */}
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5" />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5 pointer-events-none" />
 
                   {/* Centered View Button */}
                   <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 pointer-events-none">
@@ -155,7 +155,6 @@ export function SupermarketFlyers() {
                       <span className="text-white font-medium">View Flyer</span>
                     </div>
                   </div>
-                  
                 </div>
               </div>
             </motion.div>
@@ -180,7 +179,7 @@ export function SupermarketFlyers() {
         </motion.div>
       </div>
 
-      {/* Fully styled Modal Viewer */}
+      {/* Modal Viewer - Stripped background so image is perfectly visible */}
       <Dialog 
         open={!!selectedFlyer} 
         onOpenChange={(isOpen) => {
