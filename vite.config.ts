@@ -5,15 +5,13 @@ import path from 'path';
 export default defineConfig({
   plugins: [react()],
   resolve: {
-    extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
     alias: {
-      '@': path.resolve(__dirname, './src'),
-      // Add other aliases here if needed based on your imports
+      "@": path.resolve(__dirname, "./src"),
     },
   },
   build: {
     target: 'esnext',
-    outDir: 'dist', // Corrected from 'outDirt' to 'outDir' 
+    outDir: 'dist', // Standard output directory for Vite
   },
   server: {
     port: 3000,
