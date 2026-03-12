@@ -1,11 +1,20 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "motion/react";
+import { Button } from "./ui/button";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
+import { Zap, Award, Clock3 } from "lucide-react";
 import { contentfulAssetUrl, getSupermarketFlyers } from "../services/contentService";
-import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "./ui/dialog";
+
+const FALLBACK_FLYERS = [
+  "https://images.unsplash.com/photo-1747506533184-d58c53ce81e9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdXBlcm1hcmtldCUyMGZseWVyJTIwcHJvbW90aW9uYWx8ZW58MXx8fHwxNzYzMTkyODQ4fDA&ixlib=rb-4.1.0&q=80&w=1080&sig=1",
+  "https://images.unsplash.com/photo-1747506533184-d58c53ce81e9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdXBlcm1hcmtldCUyMGZseWVyJTIwcHJvbW90aW9uYWx8ZW58MXx8fHwxNzYzMTkyODQ4fDA&ixlib=rb-4.1.0&q=80&w=1080&sig=2",
+  "https://images.unsplash.com/photo-1747506533184-d58c53ce81e9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdXBlcm1hcmtldCUyMGZseWVyJTIwcHJvbW90aW9uYWx8ZW58MXx8fHwxNzYzMTkyODQ4fDA&ixlib=rb-4.1.0&q=80&w=1080&sig=3",
+];
 
 export function SupermarketFlyers() {
-  const [flyers, setFlyers] = useState<string[]>([]);
+  const [flyers, setFlyers] = useState<string[]>(FALLBACK_FLYERS);
+  const [sectionMeta, setSectionMeta] = useState<any | null>(null);
   const [selectedFlyer, setSelectedFlyer] = useState<string | null>(null);
 
   useEffect(() => {
@@ -14,48 +23,80 @@ export function SupermarketFlyers() {
       if (cancelled) return;
       const fields = items?.[0]?.fields ?? null;
       if (!fields) return;
+      setSectionMeta(fields);
       const flyersField = fields?.flyers;
       const flyersFromCms = Array.isArray(flyersField)
         ? flyersField.map((asset: any) => typeof asset === "string" ? asset : contentfulAssetUrl(asset)).filter(Boolean) as string[]
         : [];
       if (flyersFromCms.length > 0) setFlyers(flyersFromCms);
-    });
+    }).catch(err => console.error("Error fetching supermarket flyers:", err));
     return () => { cancelled = true; };
   }, []);
 
   return (
-    <section className="py-28 px-6 bg-white">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-7xl mx-auto">
-        {flyers.map((image, i) => (
-          <motion.div
-            key={i}
-            whileHover={{ y: -5, scale: 1.02 }}
-            className="group relative cursor-pointer cursor-hover"
-            onClick={() => setSelectedFlyer(image)} // Triggers the popup
-          >
-            <div className="relative overflow-hidden rounded-2xl aspect-[3/4] shadow-lg">
-              <ImageWithFallback src={image} className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
-                <span className="text-white font-medium px-4 py-2 border border-white/40 rounded-full bg-white/20 backdrop-blur-sm">
-                  View Flyer
-                </span>
+    <section id="flyers" className="py-28 px-6 bg-gradient-to-b from-gray-50 to-white relative overflow-hidden">
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-br from-[#A259FF]/10 to-[#4CC3FF]/10 rounded-full blur-3xl"></div>
+      
+      <div className="max-w-7xl mx-auto relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mb-20"
+        >
+          <div className="inline-block px-4 py-2 bg-gradient-to-r from-[#A259FF]/10 to-[#4CC3FF]/10 rounded-full mb-6 border border-[#A259FF]/20">
+            <span className="text-sm">{sectionMeta?.badgeText ?? "Core Specialty"}</span>
+          </div>
+          <h2 className="text-4xl md:text-5xl lg:text-6xl mb-6 tracking-tight">
+            {sectionMeta?.title ?? "Supermarket Campaigns"}<br />
+            <span className="bg-gradient-to-r from-[#A259FF] to-[#4CC3FF] bg-clip-text text-transparent">
+              {sectionMeta?.highlight ?? "That Deliver Results"}
+            </span>
+          </h2>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">{sectionMeta?.subtitle ?? "Professional promotional designs optimized for impact."}</p>
+        </motion.div>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-14">
+          {flyers.map((image, i) => (
+            <motion.div
+              key={i}
+              whileHover={{ y: -8, scale: 1.02 }}
+              className="group relative cursor-pointer cursor-hover"
+              onClick={() => setSelectedFlyer(image)} // State update triggers popup
+            >
+              <div className="relative overflow-hidden rounded-2xl liquid-glass-thumbnail shadow-xl">
+                <div className="relative aspect-[3/4] overflow-hidden">
+                  <ImageWithFallback src={image} alt={`Flyer ${i + 1}`} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <div className="px-6 py-2.5 bg-white/20 backdrop-blur-md border border-white/40 rounded-full">
+                      <span className="text-white font-medium">View Flyer</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-          </motion.div>
-        ))}
+            </motion.div>
+          ))}
+        </div>
+
+        <div className="text-center">
+          <Button
+            size="lg"
+            className="bg-gradient-to-r from-[#A259FF] to-[#4CC3FF] text-white rounded-full px-10 py-7 text-lg cursor-hover"
+            onClick={() => window.scrollTo({ top: document.getElementById('contact')?.offsetTop, behavior: 'smooth' })} // Example action
+          >
+            View Full Portfolio
+          </Button>
+        </div>
       </div>
 
-      {/* The Popup Logic */}
       <Dialog open={!!selectedFlyer} onOpenChange={(open) => !open && setSelectedFlyer(null)}>
-        <DialogContent className="!bg-transparent !border-none !shadow-none !max-w-[95vw] !w-fit p-0 flex items-center justify-center z-[100]">
+        <DialogContent className="!bg-transparent !border-none !shadow-none !max-w-[95vw] !w-fit p-0 flex items-center justify-center z-[10000]">
           {selectedFlyer && (
-            <ImageWithFallback 
-              src={selectedFlyer} 
-              alt="Enlarged Flyer" 
-              className="max-h-[90vh] w-auto max-w-full object-contain rounded-xl shadow-2xl" 
-            />
+            <div className="relative animate-in zoom-in-95 duration-300">
+              <ImageWithFallback src={selectedFlyer} alt="Preview" className="max-h-[90vh] w-auto max-w-full object-contain rounded-xl shadow-2xl ring-1 ring-white/10" />
+            </div>
           )}
-          <DialogTitle className="sr-only">Flyer Image</DialogTitle>
+          <DialogTitle className="sr-only">Enlarged Flyer</DialogTitle>
         </DialogContent>
       </Dialog>
     </section>
